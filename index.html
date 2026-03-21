@@ -149,13 +149,13 @@
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'gpt-4o-mini',
+                        model: 'gpt-4o',
                         messages: [{
                             role: 'user',
                             content: [
                                 {
                                     type: 'text',
-                                    text: 'Count every individual pill or tablet in this image. Count each pill separately even if they are touching or overlapping. Reply with ONLY a single number. If no pills visible, reply 0.'
+                                    text: 'Count the exact number of pills/tablets in this image. Be very careful and precise. Count each pill only once. Do not count shadows or reflections. Reply with ONLY the number, nothing else.'
                                 },
                                 {
                                     type: 'image_url',
