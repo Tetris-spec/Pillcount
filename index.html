@@ -1,4 +1,4 @@
-<!-- v2.1 - key saves locally -->
+<!-- v2.3 - capsule-aware counting -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,6 +128,7 @@
             font-size: 0.8rem;
             padding: 8px;
         }
+        .key-saved.hidden { display: none; }
         .status {
             text-align: center;
             padding: 12px;
@@ -191,14 +192,13 @@
         
         <div class="footer">
             Powered by GPT-4o Vision
-            <br><a href="#" onclick="resetKey()">Change API Key</a>
+            <br><a href="#" onclick="resetKey(); return false;">Change API Key</a>
         </div>
     </div>
 
     <script>
         let imageBase64 = null;
 
-        // Check for saved key on load
         document.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('pillcount_api_key');
             if (savedKey && savedKey.startsWith('sk-')) {
@@ -208,7 +208,6 @@
             }
         });
 
-        // Save key when entered
         document.getElementById('apiKey').addEventListener('blur', (e) => {
             const key = e.target.value.trim();
             if (key && key.startsWith('sk-')) {
@@ -259,7 +258,6 @@
                 return;
             }
 
-            // Save key if not saved
             if (!localStorage.getItem('pillcount_api_key')) {
                 localStorage.setItem('pillcount_api_key', apiKey);
             }
@@ -279,11 +277,14 @@
                     body: JSON.stringify({
                         model: 'gpt-4o',
                         messages: [{
+                            role: 'system',
+                            content: 'You are a precise pharmacy pill counter. CRITICAL RULES: 1) A two-colored capsule (like red-yellow) is ONE pill, not two. 2) Count physical pill bodies only. 3) Ignore shadows and reflections. 4) If unsure, count LOWER. Reply with ONLY a number.'
+                        }, {
                             role: 'user',
                             content: [
                                 {
                                     type: 'text',
-                                    text: 'You are a pharmacy pill counter. Count ONLY complete, clearly visible pills or tablets. Rules: 1) Each physical pill counts as 1, even if two-toned. 2) Do NOT count shadows. 3) Do NOT count reflections. 4) Do NOT count anything cut off at edges. 5) When uncertain, count LOWER not higher. Reply with ONLY the number.'
+                                    text: 'Count the pills in this image. Remember: each capsule is ONE pill even if it has two colors.'
                                 },
                                 {
                                     type: 'image_url',
